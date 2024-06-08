@@ -1,0 +1,16 @@
+{
+  "deno.enable": true,
+  "editor.formatOnSave": true,
+  "prettier.singleQuote": true,
+  "prettier.jsxSingleQuote": true,
+  "prettier.arrowParens": "avoid",
+  "prettier.bracketSameLine": false,
+  "prettier.useEditorConfig": false,
+  "prettier.singleAttributePerLine": true,
+  "typescript.preferences.quoteStyle": "single",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.printWidth": 95,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+}

@@ -1,14 +1,34 @@
 export class Sequencer {
+  private _root: Step;
   private _steps: Step[] = [];
 
   constructor(root: Step) {
-    this._steps.push(root);
+    this._root = root;
     this.initialize();
   }
 
-  public initialize() {
+  // Initialization ------------------------------------------------------------
+
+  private initialize() {
+    this.reset();
     while (isBranch(this.current)) this.navigate('forward');
   }
+
+  private reset() {
+    this._steps = [this._root];
+  }
+
+  // Step state ----------------------------------------------------------------
+
+  get current(): Step {
+    return this._steps[this._steps.length - 1];
+  }
+
+  get parent(): Step {
+    return this._steps[this._steps.length - 2];
+  }
+
+  // Resolvers -----------------------------------------------------------------
 
   private getStepByRule(rule: NavigationRule) {
     const id = resolve(rule);
@@ -27,25 +47,19 @@ export class Sequencer {
       const step = this.getStepByRule(direction === 'forward' ? next : previous);
       this._steps.pop();
       if (step) this._steps.push(step);
-    }
-
-    while (isBranch(this.current)) {
-      if (direction === 'forward') {
-        const start = this.getStepByRule(this.current.start);
-        if (start) this._steps.push(start);
-      } else if (direction === 'backward') {
-        this._steps.pop();
+    } else {
+      while (isBranch(this.current)) {
+        if (direction === 'forward') {
+          const start = this.getStepByRule(this.current.start);
+          if (start) this._steps.push(start);
+        } else if (direction === 'backward') {
+          this._steps.pop();
+        }
       }
     }
   }
 
-  get current(): Step {
-    return this._steps[this._steps.length - 1];
-  }
-
-  get parent(): Step {
-    return this._steps[this._steps.length - 2];
-  }
+  // Navigation ----------------------------------------------------------------
 
   next() {
     this.navigate('forward');
@@ -53,6 +67,15 @@ export class Sequencer {
 
   previous() {
     this.navigate('backward');
+  }
+
+  goTo(path: string[]) {
+    this._steps = [this._root];
+    for (const id of path) {
+      const step = this.getStepByRule(id);
+      if (step) this._steps.push(step);
+      else throw new Error(`Step with id '${id}' not found`);
+    }
   }
 }
 
